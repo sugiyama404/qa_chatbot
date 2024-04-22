@@ -2,11 +2,11 @@ FROM python:3.12-slim-bullseye AS builder
 
 RUN apt-get update && \
     apt-get -y install --no-install-recommends \
-    locales=2.31-13+deb11u8 tzdata=2024a-0+deb11u1 default-libmysqlclient-dev=1.0.7 \
-    pkg-config=0.29.2-1 fonts-ipafont=00303-21 gcc=4:10.2.1-1 && \
+    locales=2.31-13+deb11u8 && \
     localedef -f UTF-8 -i ja_JP ja_JP.UTF-8 && \
     apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
 ENV LANG ja_JP.UTF-8
 ENV LANGUAGE ja_JP:ja
 ENV LC_ALL ja_JP.UTF-8
@@ -32,9 +32,9 @@ COPY --from=builder /root/opt .
 RUN useradd --shell /bin/bash -m ${USERNAME}
 
 COPY --from=builder /usr/local/lib /usr/local/lib
-COPY --from=builder /lib/python3.13 /lib/python3.13
+COPY --from=builder /lib/python3.12 /lib/python3.12
 
 RUN chown -R ${USERNAME}:${USERNAME} .
 USER ${USERNAME}
 
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
