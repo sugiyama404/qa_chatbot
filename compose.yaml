@@ -1,0 +1,31 @@
+services:
+  web:
+    restart: always
+    build: ./webserver
+    container_name: "web_qachatbot"
+    tty: true
+    working_dir: "/usr/src/app"
+    volumes:
+      - ./webserver/app:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - 8080:8080
+  api:
+    restart: always
+    build:
+      target: builder
+      context: ./apserver
+    container_name: "api_qachatbot"
+    volumes:
+      - ./apserver:/root/opt
+    tty: true
+    ports:
+      - 8000:8000
+  # loadbalancer:
+  #   image: nginx:1.24-bullseye
+  #   container_name: nginx
+  #   ports:
+  #     - "80:80"
+  #   volumes:
+  #     - ./loadbalancer:/etc/nginx/conf.d:ro
+
