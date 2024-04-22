@@ -9,7 +9,7 @@ services:
       - ./webserver/app:/usr/src/app
       - /usr/src/app/node_modules
     ports:
-      - 8080:8080
+      - 3000:3000
   api:
     restart: always
     build:
@@ -21,11 +21,11 @@ services:
     tty: true
     ports:
       - 8000:8000
-  # loadbalancer:
-  #   image: nginx:1.24-bullseye
-  #   container_name: nginx
-  #   ports:
-  #     - "80:80"
-  #   volumes:
-  #     - ./loadbalancer:/etc/nginx/conf.d:ro
+  loadbalancer:
+    image: nginx:1.24-bullseye
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./loadbalancer:/etc/nginx/conf.d:ro
 
