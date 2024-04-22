@@ -1,0 +1,51 @@
+services:
+  # web:
+  #   restart: always
+  #   build: ./webserver
+  #   container_name: "web_qachatbot"
+  #   tty: true
+  #   volumes:
+  #     - ./webserver:/root/opt
+  #   ports:
+  #     - 8080:8080
+  api:
+    restart: always
+    build:
+      target: builder
+      context: ./apserver
+    container_name: "api_qachatbot"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: qaproject
+      MYSQL_USER: qaMySql1
+      MYSQL_PASSWORD: qaMySql1
+      MYSQL_HOST: db
+    volumes:
+      - ./apserver:/root/opt
+    tty: true
+    ports:
+      - 8000:8000
+  # loadbalancer:
+  #   image: nginx:1.24-bullseye
+  #   container_name: nginx
+  #   ports:
+  #     - "80:80"
+  #   volumes:
+  #     - ./loadbalancer:/etc/nginx/conf.d:ro
+  db:
+    build: ./dbserver
+    container_name: "db_qachatbot"
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: qaproject
+      MYSQL_USER: qaMySql1
+      MYSQL_PASSWORD: qaMySql1
+      TZ: 'Asia/Tokyo'
+    command: mysqld
+    volumes:
+      - ./dbserver/conf/my.cnf:/etc/mysql/conf.d/my.cnf
+    ports:
+      - 3306:3306
+    cap_add:
+      - SYS_NICE
