@@ -10,6 +10,7 @@ services:
       - /usr/src/app/node_modules
     ports:
       - 3000:3000
+      - 24678:24678
   api:
     restart: always
     build:
@@ -25,7 +26,7 @@ services:
     image: nginx:1.24-bullseye
     container_name: nginx
     ports:
-      - "80:80"
+      - 80:80
     volumes:
       - ./loadbalancer:/etc/nginx/conf.d:ro
 

@@ -1,5 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+// @ts-ignore
 import { defineNuxtConfig } from 'nuxt/config'
+
 export default defineNuxtConfig({
   devtools: { enabled: true },
   css: ['~/assets/css/main.css',
@@ -14,7 +16,7 @@ export default defineNuxtConfig({
       ],
       script: [
         { src: '/bootstrap.min.js' },
-        { src: '/jquery.min.js' }
+        { src: '/jquery-3.7.1.min.js' }
       ],
     }
   }
