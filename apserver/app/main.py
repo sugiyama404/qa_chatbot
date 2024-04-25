@@ -30,4 +30,4 @@ def _get_answer(query: str)->list:
     ans = []
     for idx in top_results[1][0]:
         ans.append({"answer": answers[idx]})
-    return ans
+    return ans[0]

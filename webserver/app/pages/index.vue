@@ -1,27 +1,23 @@
 <script setup lang="ts">
 const stoptime: number = 100
 const task = ref('');
-const handleClick = () => {
+const handleClick = async () => {
   const userMessage = task.value;
   const chatBody = document.querySelector('.chat-body');
   if (userMessage && chatBody) {
 
-    const newUserMessage = createTypingMessage('あなた', userMessage, stoptime);
+    const newUserMessage = createTypingMessage('あなた', userMessage, stoptime, false);
     chatBody.appendChild(newUserMessage);
-
-    const sleeptime = userMessage.length * stoptime + 500
-    setTimeout(() => {
-      const content = generateBotResponse(userMessage)
-      const newAiMessage = createTypingMessage('AI', content, stoptime);
-      chatBody.appendChild(newAiMessage);
-      chatBody.scrollTop = chatBody.scrollHeight;
-      task.value = '';
-    }, sleeptime);
-
+    const content = await generateBotResponse(userMessage);
+    console.log(content)
+    const newAiMessage = createTypingMessage('AI', content, stoptime, true);
+    chatBody.appendChild(newAiMessage);
+    chatBody.scrollTop = chatBody.scrollHeight;
+    task.value = '';
   }
 };
 
-function createTypingMessage(author:string, content:string, stoptime:number) {
+function createTypingMessage(author:string, content:string, stoptime:number, isAnimationOff:boolean) {
     const messageElement = document.createElement('div');
     messageElement.classList.add('chat-message', 'typeing');
 
@@ -36,22 +32,30 @@ function createTypingMessage(author:string, content:string, stoptime:number) {
     messageElement.appendChild(contentElement);
 
     let index = 0;
-    const typingInterval = setInterval(() => {
-      contentElement.textContent += content[index];
-      index++;
+    if (isAnimationOff) {
+      const typingInterval = setInterval(() => {
+        contentElement.textContent += content[index];
+        index++;
 
-      if (index === content.length) {
-        clearInterval(typingInterval);
-        messageElement.classList.add('active');
-      }
-    }, stoptime);
+        if (index === content.length) {
+          clearInterval(typingInterval);
+          messageElement.classList.add('active');
+        }
+      }, stoptime);
+    } else {
+      contentElement.textContent = content;
+      messageElement.classList.add('active');
+    }
 
     return messageElement;
   }
 
-function generateBotResponse(userMessage:string) {
-  console.log(userMessage);
-  return "回答です。"
+async function generateBotResponse(userMessage:string) {
+  const { data: response } = await useFetch('/stage', {
+        method: 'post',
+        body: { "query": userMessage },
+    });
+  return response.value.answer
 }
 
 </script>
