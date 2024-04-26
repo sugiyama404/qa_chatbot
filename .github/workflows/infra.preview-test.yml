@@ -9,9 +9,6 @@ on:
       - apserver/**
       - .github/workflows/**
 
-permissions:
-  contents: read
-
 defaults:
   run:
     shell: bash
@@ -26,12 +23,12 @@ jobs:
 
       - name: Launching the Docker Container
         run: |
-          docker compose up -d
+          docker-compose up -d
 
       - name: Running Tests
         run: |
-          docker compose run api pytest /root/opt/app/tests/ -v --log-cli-level=DEBUG
+          docker-compose run api pytest /root/opt/app/tests/ -v --log-cli-level=DEBUG
 
       - name: Display test results
         run: |
-          docker compose logs web
+          docker-compose logs web
