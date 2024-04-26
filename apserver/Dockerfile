@@ -22,18 +22,18 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # 実行ステージ
-FROM python:3.12-slim-bullseye
+# FROM python:3.12-slim-bullseye
 
-ARG USERNAME=nonroot
+# ARG USERNAME=nonroot
 
-WORKDIR /root/opt
-COPY --from=builder /root/opt .
-RUN useradd --shell /bin/bash -m ${USERNAME}
+# WORKDIR /root/opt
+# COPY --from=builder /root/opt .
+# RUN useradd --shell /bin/bash -m ${USERNAME}
 
-COPY --from=builder /usr/lib /usr/lib
-COPY --from=builder /usr/local/lib/python3.12 /usr/local/lib/python3.12
+# COPY --from=builder /usr/lib /usr/lib
+# COPY --from=builder /usr/local/lib/python3.12 /usr/local/lib/python3.12
 
-RUN chown -R ${USERNAME}:${USERNAME} .
-USER ${USERNAME}
+# RUN chown -R ${USERNAME}:${USERNAME} .
+# USER ${USERNAME}
 
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
