@@ -1,11 +1,14 @@
 from typing import Union
 import torch
-from sentence_transformers import util
+from sentence_transformers import util, SentenceTransformer
 from . import model, df
 from . import utils
 
 from fastapi import FastAPI
 from pydantic import BaseModel
+
+if model is None:
+    model = SentenceTransformer.load("./app/model")
 
 app = FastAPI()
 
