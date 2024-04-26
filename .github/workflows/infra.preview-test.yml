@@ -9,6 +9,9 @@ on:
       - apserver/**
       - .github/workflows/**
 
+permissions:
+  contents: read
+
 defaults:
   run:
     shell: bash
