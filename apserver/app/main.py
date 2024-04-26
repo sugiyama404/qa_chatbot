@@ -2,7 +2,7 @@ from typing import Union
 import torch
 from sentence_transformers import util
 from . import model, df
-from utils import get_unique_positives
+from . import utils
 
 from fastapi import FastAPI
 from pydantic import BaseModel
@@ -47,7 +47,7 @@ def _get_answer(query: str)->dict:
         上位回答を含む辞書または、回答が見つからない場合は空の辞書
     """
     # answers = list(df["positive"][~df["positive"].duplicated()])
-    answers = get_unique_positives(df)
+    answers = utils.get_unique_positives(df)
     corpus_embeddings = model.encode(answers, convert_to_tensor=True)
     query_embedding = model.encode(query, convert_to_tensor=True)
     cos_scores = util.cos_sim(query_embedding , corpus_embeddings)
