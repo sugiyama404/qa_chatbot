@@ -16,7 +16,7 @@ def test_get_answer_with_query():
     """
     POSTメソッドによる正常処理テスト (クエリパラメータあり)
     """
-    query = "天気はいかがですか？"
+    query = "攻殻機動隊とは何ですか？"
     response = client.post("/stage", json={"query": query})
     assert response.status_code == 200
     assert "answer" in response.json()

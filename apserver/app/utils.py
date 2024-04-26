@@ -26,3 +26,24 @@ def get_model():
         print(f"データセットが見つかりません。パスを確認してください: {e.filename}")
     except Exception as e:
         print(f"学習中にエラーが発生しました: {e}")
+
+def get_unique_positives(df):
+    """
+    データフレームから重複を除いた `positive` 列の値をリストとして取得する関数
+
+    Args:
+        df: データフレーム
+
+    Returns:
+        重複を除いた `positive` 列の値のリスト
+    """
+
+    if not pd.api.types.is_string_dtype(df["positive"]):
+        raise TypeError("`positive` column must be of string dtype")
+
+    unique_positives = []
+    for value in df["positive"].unique():
+        if value is not None:
+            unique_positives.append(value)
+
+    return unique_positives
