@@ -13,10 +13,9 @@ services:
       - 24678:24678
   api:
     restart: always
-    build: ./apserver
-    # build:
-    #   target: builder
-    #   context: ./apserver
+    build:
+      target: builder
+      context: ./apserver
     container_name: "api_qachatbot"
     command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
     volumes:
