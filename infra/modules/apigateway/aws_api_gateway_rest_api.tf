@@ -17,7 +17,7 @@ resource "aws_api_gateway_rest_api" "main" {
         x-amazon-apigateway-integration = {
           payloadFormatVersion = "1.0"
           type                 = "HTTP"
-          uri                  = var.elb_uri
+          uri                  = "${var.elb_uri}"
         }
       }
     }

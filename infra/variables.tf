@@ -1,7 +1,7 @@
 variable "app_name" {
   description = "application name"
   type        = string
-  default     = "qa_chatbot"
+  default     = "chatbot"
 }
 
 variable "region" {
