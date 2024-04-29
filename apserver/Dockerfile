@@ -17,7 +17,7 @@ WORKDIR /root/opt
 COPY requirements.txt .
 
 # hadolint ignore=DL3013
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt  --default-timeout=3000
 
 COPY . .
 
@@ -28,12 +28,13 @@ ARG USERNAME=nonroot
 
 WORKDIR /root/opt
 COPY --from=builder /root/opt .
-RUN useradd --shell /bin/bash -m ${USERNAME}
+RUN useradd -m ${USERNAME}
 
 COPY --from=builder /usr/lib /usr/lib
-COPY --from=builder /usr/local/lib/python3.12 /usr/local/lib/python3.12
+COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
 
 RUN chown -R ${USERNAME}:${USERNAME} .
 USER ${USERNAME}
 
+EXPOSE 8000
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -17,7 +17,8 @@ resource "aws_api_gateway_rest_api" "main" {
         x-amazon-apigateway-integration = {
           payloadFormatVersion = "1.0"
           type                 = "HTTP"
-          uri                  = "${var.elb_uri}"
+          connection_type      = "VPC_LINK"
+          connection_id        = "${var.api_gateway_vpc_link_id}"
         }
       }
     }

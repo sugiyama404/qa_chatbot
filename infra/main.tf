@@ -25,8 +25,8 @@ module "ecr" {
   app_name   = var.app_name
 }
 
-# Null Resource
-module "after_ecr" {
+# BASH
+module "bash" {
   source     = "./modules/bash"
   region     = var.region
   image_name = var.image_name
@@ -41,12 +41,13 @@ module "network" {
 
 # ELB
 module "elb" {
-  source                  = "./modules/elb"
-  app_name                = var.app_name
-  api_port                = var.api_port
-  main_vpc_id             = module.network.main_vpc_id
-  subnet_public_subnet_1a = module.network.subnet_public_subnet_1a_id
-  sg_alb_id               = module.network.sg_alb_id
+  source                     = "./modules/elb"
+  app_name                   = var.app_name
+  region                     = var.region
+  api_port                   = var.api_port
+  main_vpc_id                = module.network.main_vpc_id
+  subnet_public_subnet_1a_id = module.network.subnet_public_subnet_1a_id
+  sg_alb_id                  = module.network.sg_alb_id
 }
 
 # ECS
@@ -55,14 +56,16 @@ module "ecs" {
   app_name                    = var.app_name
   sg_ecs_id                   = module.network.sg_ecs_id
   subnet_private_subnet_1a_id = module.network.subnet_private_subnet_1a_id
+  subnet_public_subnet_1a_id  = module.network.subnet_public_subnet_1a_id
   aws_iam_role                = module.iam.aws_iam_role
   api_repository_url          = module.ecr.api_repository_url
   lb_target_group_api_arn     = module.elb.lb_target_group_api_arn
   api_port                    = var.api_port
+  http_arn                    = module.elb.http_arn
 }
 
 
-# # s3
+# # S3
 # module "s3" {
 #   source   = "./modules/s3"
 #   app_name = var.app_name
@@ -76,6 +79,7 @@ module "apigateway" {
   region                  = var.region
   api_gateway_vpc_link_id = module.elb.api_gateway_vpc_link_id
   elb_uri                 = module.elb.elb_uri
+  alb_arn                 = module.elb.alb_arn
 
   # s3_uri            = module.s3.s3_uri
   # s3_url            = module.s3.s3_url

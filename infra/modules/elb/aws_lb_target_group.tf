@@ -2,7 +2,7 @@
 resource "aws_lb_target_group" "api" {
   name        = "${var.app_name}-tg"
   port        = var.api_port
-  protocol    = "HTTP"
+  protocol    = "TCP"
   target_type = "ip"
   vpc_id      = var.main_vpc_id
 

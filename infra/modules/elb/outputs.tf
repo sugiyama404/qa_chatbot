@@ -6,6 +6,14 @@ output "api_gateway_vpc_link_id" {
   value = aws_api_gateway_vpc_link.main.id
 }
 
+output "http_arn" {
+  value = aws_lb_listener.http.arn
+}
+
 output "elb_uri" {
   value = "http://${aws_lb.main.dns_name}"
+}
+
+output "alb_arn" {
+  value = aws_lb.main.arn
 }

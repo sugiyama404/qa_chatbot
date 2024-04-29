@@ -1,12 +1,32 @@
-resource "aws_iam_policy" "newworld_policy" {
-  name        = "test_policy"
+resource "aws_iam_policy" "ecr_policy" {
+  name = "${var.app_name}_ecr_policy"
 
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
         Action = [
-          "ecr:*",
+          "ecr:*"
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+      },
+    ]
+  })
+}
+
+resource "aws_iam_policy" "ecs_task_policy" {
+  name = "${var.app_name}_ecs_task_policy"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "ssmmessages:CreateControlChannel",
+          "ssmmessages:CreateDataChannel",
+          "ssmmessages:OpenControlChannel",
+          "ssmmessages:OpenDataChannel"
         ]
         Effect   = "Allow"
         Resource = "*"
