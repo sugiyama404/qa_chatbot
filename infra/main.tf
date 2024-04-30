@@ -1,5 +1,5 @@
 terraform {
-  required_version = "=1.0.6"
+  required_version = "=1.8.2"
   required_providers {
     aws = {
       source  = "hashicorp/aws"
@@ -47,6 +47,7 @@ module "elb" {
   api_port                   = var.api_port
   main_vpc_id                = module.network.main_vpc_id
   subnet_public_subnet_1a_id = module.network.subnet_public_subnet_1a_id
+  subnet_public_subnet_1c_id = module.network.subnet_public_subnet_1c_id
   sg_alb_id                  = module.network.sg_alb_id
 }
 
@@ -66,22 +67,21 @@ module "ecs" {
 
 
 # # S3
-# module "s3" {
-#   source   = "./modules/s3"
-#   app_name = var.app_name
-#   region   = var.region
-# }
+module "s3" {
+  source   = "./modules/s3"
+  app_name = var.app_name
+  region   = var.region
+}
 
 # apigateway
 module "apigateway" {
-  source                  = "./modules/apigateway"
-  app_name                = var.app_name
-  region                  = var.region
-  api_gateway_vpc_link_id = module.elb.api_gateway_vpc_link_id
-  elb_uri                 = module.elb.elb_uri
-  alb_arn                 = module.elb.alb_arn
+  source   = "./modules/apigateway"
+  app_name = var.app_name
+  region   = var.region
+  elb_uri  = module.elb.elb_uri
+  alb_arn  = module.elb.alb_arn
 
-  # s3_uri            = module.s3.s3_uri
-  # s3_url            = module.s3.s3_url
+  s3_uri = module.s3.s3_uri
+  s3_url = module.s3.s3_url
 
 }

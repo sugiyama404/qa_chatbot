@@ -7,11 +7,17 @@ app = FastAPI()
 class Query(BaseModel):
     query: str
 
-@app.get("/")
+@app.api_route('/', methods=['GET', 'HEAD'])
 def read_root():
     return {"Hello": "World"}
 
-@app.post("/stage")
+@app.api_route('/', methods=['POST', 'HEAD'])
+def test_answer(query: Query):
+    if query.query is None:
+        return {"message": "Please input query"}
+    return {"answer": f"answer-{query.query}"}
+
+@app.api_route('/stage', methods=['POST', 'HEAD'])
 def get_answer(query: Query):
     if query.query is None:
         return {"message": "Please input query"}

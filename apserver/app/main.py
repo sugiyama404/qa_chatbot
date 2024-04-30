@@ -3,8 +3,9 @@ from . import utils
 
 from fastapi import FastAPI
 from pydantic import BaseModel
+import uvicorn
 
-data_dir = "/root/opt/app"
+data_dir = "/opt/app"
 model, df = utils.load_model_and_dataset(data_dir)
 if model is None:
     model = SentenceTransformer.load(f"{data_dir}/model")
@@ -14,14 +15,14 @@ app = FastAPI()
 class Query(BaseModel):
     query: str
 
-@app.get("/")
+@app.api_route('/', methods=['GET', 'HEAD'])
 def read_root():
     """
     シンプルな挨拶メッセージを返すルートエンドポイント。
     """
     return {"Hello": "World"}
 
-@app.post("/stage")
+@app.api_route('/stage', methods=['POST', 'HEAD'])
 def get_answer(query: Query):
     """
     answer API エンドポイント。
@@ -39,3 +40,5 @@ def get_answer(query: Query):
     except (IndexError, ValueError) as e:
         return {"message": f"Error processing query: {str(e)}"}
 
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000, log_level="info")
