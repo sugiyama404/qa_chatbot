@@ -65,23 +65,20 @@ module "ecs" {
   http_arn                    = module.elb.http_arn
 }
 
-
 # # S3
-module "s3" {
-  source   = "./modules/s3"
-  app_name = var.app_name
-  region   = var.region
-}
+# module "s3" {
+#   source   = "./modules/s3"
+#   app_name = var.app_name
+#   region   = var.region
+# }
 
 # apigateway
-module "apigateway" {
-  source   = "./modules/apigateway"
-  app_name = var.app_name
-  region   = var.region
-  elb_uri  = module.elb.elb_uri
-  alb_arn  = module.elb.alb_arn
-
-  s3_uri = module.s3.s3_uri
-  s3_url = module.s3.s3_url
-
-}
+# module "apigateway" {
+#   source   = "./modules/apigateway"
+#   app_name = var.app_name
+#   region   = var.region
+#   elb_uri  = module.elb.elb_uri
+#   alb_arn  = module.elb.alb_arn
+#   s3_uri = module.s3.s3_uri
+#   s3_url = module.s3.s3_url
+# }

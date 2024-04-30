@@ -14,8 +14,8 @@ resource "aws_ecs_service" "MainService" {
 
   network_configuration {
     security_groups  = [var.sg_ecs_id]
-    subnets          = ["${var.subnet_public_subnet_1a_id}"]
-    assign_public_ip = true
+    subnets          = ["${var.subnet_private_subnet_1a_id}"]
+    assign_public_ip = false
   }
 
   capacity_provider_strategy {
