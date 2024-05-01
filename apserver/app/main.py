@@ -1,12 +1,14 @@
 from sentence_transformers import SentenceTransformer
-from . import utils
+import sys
+sys.path.append('/opt')
+from app.utils.main import load_model_and_dataset, get_answer
 
 from fastapi import FastAPI
 from pydantic import BaseModel
 import uvicorn
 
 data_dir = "/opt/app"
-model, df = utils.load_model_and_dataset(data_dir)
+model, df = load_model_and_dataset(data_dir)
 if model is None:
     model = SentenceTransformer.load(f"{data_dir}/model")
 
@@ -19,11 +21,12 @@ class Query(BaseModel):
 def read_root():
     """
     シンプルな挨拶メッセージを返すルートエンドポイント。
+    ヘルスチェック用
     """
     return {"Hello": "World"}
 
 @app.api_route('/stage', methods=['POST', 'HEAD'])
-def get_answer(query: Query):
+def post_answer(query: Query):
     """
     answer API エンドポイント。
     このエンドポイントはリクエストボディにクエリ文字列を受け取り、
@@ -36,7 +39,7 @@ def get_answer(query: Query):
     if query.query is None:
         return {"message": "Please input query"}
     try:
-        return utils.get_answer(model, df, query.query)
+        return get_answer(model, df, query.query)
     except (IndexError, ValueError) as e:
         return {"message": f"Error processing query: {str(e)}"}
 

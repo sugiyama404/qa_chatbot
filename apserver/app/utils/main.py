@@ -29,7 +29,7 @@ def load_model_and_dataset(data_dir: str) -> tuple[SentenceTransformer, pd.DataF
         print(f"データセットが見つかりません。パスを確認してください: {e.filename}")
         raise
 
-def get_unique_positives(df):
+def _get_unique_positives(df):
     """
     データフレームから重複を除いた `positive` 列の値をリストとして取得する関数
     Args:
@@ -54,7 +54,7 @@ def get_answer(model: SentenceTransformer ,df: pd.DataFrame ,query: str)->dict:
     Returns:
         上位回答を含む辞書または、回答が見つからない場合は空の辞書
     """
-    answers = get_unique_positives(df)
+    answers = _get_unique_positives(df)
     corpus_embeddings = model.encode(answers, convert_to_tensor=True)
     query_embedding = model.encode(query, convert_to_tensor=True)
     cos_scores = util.cos_sim(query_embedding , corpus_embeddings)
