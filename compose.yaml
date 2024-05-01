@@ -19,7 +19,7 @@ services:
     container_name: "api_qachatbot"
     command: ["python","app/main.py"]
     volumes:
-      - ./apserver:/root/opt
+      - ./apserver:/opt
     tty: true
     ports:
       - 8000:8000

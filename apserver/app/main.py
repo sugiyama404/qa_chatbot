@@ -1,28 +1,24 @@
-from sentence_transformers import SentenceTransformer
 import sys
 sys.path.append('/opt')
-from app.utils.main import load_model_and_dataset, get_answer
+from app.utils.main import get_answer
+from app.utils.dao import Sentencedata, Query
 
-from fastapi import FastAPI
-from pydantic import BaseModel
+from fastapi import FastAPI, BackgroundTasks
 import uvicorn
-
-data_dir = "/opt/app"
-model, df = load_model_and_dataset(data_dir)
-if model is None:
-    model = SentenceTransformer.load(f"{data_dir}/model")
+import time
 
 app = FastAPI()
 
-class Query(BaseModel):
-    query: str
+data_dir = "/opt/app"
+data = Sentencedata()
 
 @app.api_route('/', methods=['GET', 'HEAD'])
-def read_root():
+async def health_check(background_tasks: BackgroundTasks):
     """
     シンプルな挨拶メッセージを返すルートエンドポイント。
     ヘルスチェック用
     """
+    background_tasks.add_task(data.add, data_dir)
     return {"Hello": "World"}
 
 @app.api_route('/stage', methods=['POST', 'HEAD'])
@@ -36,10 +32,25 @@ def post_answer(query: Query):
     Returns:
         回答文字列またはエラーメッセージを含む辞書。
     """
+    global data
     if query.query is None:
         return {"message": "Please input query"}
     try:
-        return get_answer(model, df, query.query)
+        if data.model == None:
+            count = 0
+            flag = False
+            while count >= 30:
+                if data.model != None:
+                    flag = True
+                    break
+                time.sleep(10)
+                count += 1
+            if flag:
+                return get_answer(data.model, data.df, query.query)
+            else:
+                return {"message": "try again..."}
+        else:
+            return get_answer(data.model, data.df, query.query)
     except (IndexError, ValueError) as e:
         return {"message": f"Error processing query: {str(e)}"}
 
