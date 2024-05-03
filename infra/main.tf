@@ -66,11 +66,11 @@ module "ecs" {
 }
 
 # # S3
-module "s3" {
-  source   = "./modules/s3"
-  app_name = var.app_name
-  region   = var.region
-}
+# module "s3" {
+#   source   = "./modules/s3"
+#   app_name = var.app_name
+#   region   = var.region
+# }
 
 # apigateway
 # module "apigateway" {

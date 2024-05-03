@@ -85,6 +85,7 @@ def _get_model(data_dir: str):
                 warmup_steps=1,
                 )
         model.save(path = f"{data_dir}/model")
+        return model
     except FileNotFoundError as e:
         print(f"データセットが見つかりません。パスを確認してください: {e.filename}")
     except Exception as e:
