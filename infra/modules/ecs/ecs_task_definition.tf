@@ -1,8 +1,8 @@
 resource "aws_ecs_task_definition" "MainDefinition" {
   family                   = "${var.app_name}-definition"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = 512
-  memory                   = 1024
+  cpu                      = 1024
+  memory                   = 6144
   execution_role_arn       = var.aws_iam_role
   task_role_arn            = var.aws_iam_role
   network_mode             = "awsvpc"
@@ -10,8 +10,8 @@ resource "aws_ecs_task_definition" "MainDefinition" {
     {
       name      = "${var.app_name}"
       image     = "${var.api_repository_url}:latest"
-      cpu       = 512
-      memory    = 1024
+      cpu       = 1024
+      memory    = 6144
       essential = true
       portMappings = [
         {

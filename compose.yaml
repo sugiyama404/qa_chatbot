@@ -17,6 +17,7 @@ services:
       target: builder
       context: ./apserver
     container_name: "api_qachatbot"
+    working_dir: /opt
     command: ["python","app/main.py"]
     volumes:
       - ./apserver:/opt
