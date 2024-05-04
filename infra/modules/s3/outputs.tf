@@ -5,3 +5,11 @@ output "s3_url" {
 output "s3_uri" {
   value = "s3://${aws_s3_bucket.main.bucket}"
 }
+
+output "s3_domain_name" {
+  value = aws_s3_bucket.main.bucket_regional_domain_name
+}
+
+output "s3_origin_id" {
+  value = aws_s3_bucket.main.id
+}
