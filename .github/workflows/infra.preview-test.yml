@@ -27,7 +27,7 @@ jobs:
 
       - name: Running Tests
         run: |
-          docker-compose run api pytest /root/opt/app/tests/ -v --log-cli-level=DEBUG
+          docker-compose run api pytest /opt/app/tests/ -v --log-cli-level=DEBUG
 
       - name: Display test results
         run: |
