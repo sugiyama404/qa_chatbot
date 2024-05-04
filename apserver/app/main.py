@@ -3,6 +3,7 @@ sys.path.append('/opt')
 from app.utils.main import get_answer
 from app.utils.dao import Sentencedata, Query
 from sentence_transformers import SentenceTransformer
+import pandas as pd
 
 from fastapi import FastAPI, BackgroundTasks
 import uvicorn
@@ -41,13 +42,14 @@ def post_answer(query: Query):
     try:
         if data.model == None:
             model = None
+            df = pd.read_csv(f"{data_dir}/qanda_transformer.csv")
             for _ in range(30):
                 if os.path.isdir(f"{data_dir}/model"):
                     model = SentenceTransformer.load(f"{data_dir}/model")
                     break
                 time.sleep(10)
             if model != None:
-                return get_answer(data.model, data.df, query.query)
+                return get_answer(model, df, query.query)
             else:
                 return {"message": "try again..."}
         else:
