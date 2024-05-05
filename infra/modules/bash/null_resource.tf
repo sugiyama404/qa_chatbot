@@ -4,6 +4,14 @@ resource "null_resource" "default" {
   }
 
   provisioner "local-exec" {
+    command = "docker build -t ${var.image_name} --file ../apserver/Dockerfile ../apserver/"
+  }
+
+  provisioner "local-exec" {
+    command = "docker tag ${var.image_name}:latest ${data.aws_caller_identity.self.account_id}.dkr.ecr.ap-northeast-1.amazonaws.com/${var.image_name}:latest"
+  }
+
+  provisioner "local-exec" {
     command = "docker push ${data.aws_caller_identity.self.account_id}.dkr.ecr.ap-northeast-1.amazonaws.com/${var.image_name}:latest"
   }
 }
