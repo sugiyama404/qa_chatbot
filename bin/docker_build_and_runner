@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+function docker_build_and_runner() {
+  local cwd="$1"
+  local id="$2"
+  cd "${cwd}"
+  cd apserver
+  docker build -t "${id}".dkr.ecr.ap-northeast-1.amazonaws.com/transformer:latest .
+  cd ..
+  docker run -d -p 8000:8000 -it "${id}".dkr.ecr.ap-northeast-1.amazonaws.com/transformer:latest
+  echo "docker running ......"
+}
+
+function main() {
+  local cwd
+  cwd="$(cd "$(dirname "$0")/.." && pwd)"
+  env_dir="${cwd}/bin/conf/.env"
+
+  # shellcheck source=/dev/null
+  source "${env_dir}"
+
+  account_id=$(grep -v '^AWS_ACCOUNT_ID=\K.*$' "${env_dir}" | cut -d '=' -f2 || read -p -r "Enter aws account id: ")
+  docker_build_and_runner "${cwd}" "${account_id}"
+}
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+  main "$@"
+fi

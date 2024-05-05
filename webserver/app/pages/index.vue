@@ -51,7 +51,7 @@ function createTypingMessage(author:string, content:string, stoptime:number, isA
   }
 
 async function generateBotResponse(userMessage:string) {
-  const { data: response } = await useFetch('/stage', {
+  const { data: response } = await useFetch('/stage/', {
         method: 'post',
         body: { "query": userMessage },
     });

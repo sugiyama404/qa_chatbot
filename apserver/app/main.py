@@ -1,25 +1,32 @@
-from typing import Union
-import torch
-from sentence_transformers import util
-from . import model, df
+import sys
+sys.path.append('/opt')
+from app.utils.main import get_answer
+from app.utils.dao import Sentencedata, Query
+from sentence_transformers import SentenceTransformer
+import pandas as pd
 
-from fastapi import FastAPI
-from pydantic import BaseModel
+from fastapi import FastAPI, BackgroundTasks
+import uvicorn
+import time
+import os
 
 app = FastAPI()
 
-class Query(BaseModel):
-    query: str
+data_dir = "/opt/app"
+data = Sentencedata()
 
-@app.get("/")
-def read_root():
+@app.api_route('/', methods=['GET', 'HEAD'])
+async def health_check(background_tasks: BackgroundTasks):
     """
     シンプルな挨拶メッセージを返すルートエンドポイント。
+    ヘルスチェック用
     """
+    if not os.path.isdir(data_dir + "/model"):
+        background_tasks.add_task(data.add, data_dir)
     return {"Hello": "World"}
 
-@app.post("/stage")
-def get_answer(query: Query):
+@app.api_route('/', methods=['POST', 'HEAD'])
+def post_answer(query: Query):
     """
     answer API エンドポイント。
     このエンドポイントはリクエストボディにクエリ文字列を受け取り、
@@ -29,28 +36,26 @@ def get_answer(query: Query):
     Returns:
         回答文字列またはエラーメッセージを含む辞書。
     """
-
+    global data
     if query.query is None:
         return {"message": "Please input query"}
     try:
-        return _get_answer(query.query)
+        if data.model == None:
+            model = None
+            df = pd.read_csv(f"{data_dir}/qanda_transformer.csv")
+            for _ in range(30):
+                if os.path.isdir(f"{data_dir}/model"):
+                    model = SentenceTransformer.load(f"{data_dir}/model")
+                    break
+                time.sleep(10)
+            if model != None:
+                return get_answer(model, df, query.query)
+            else:
+                return {"message": "try again..."}
+        else:
+            return get_answer(data.model, data.df, query.query)
     except (IndexError, ValueError) as e:
         return {"message": f"Error processing query: {str(e)}"}
 
-def _get_answer(query: str)->dict:
-    """
-    指定されたクエリに対する回答を取得する内部関数。
-    Args:
-        query: 質問文
-    Returns:
-        上位回答を含む辞書または、回答が見つからない場合は空の辞書
-    """
-    answers = list(df["positive"][~df["positive"].duplicated()])
-    corpus_embeddings = model.encode(answers, convert_to_tensor=True)
-    query_embedding = model.encode(query, convert_to_tensor=True)
-    cos_scores = util.cos_sim(query_embedding , corpus_embeddings)
-    top_results = torch.topk(cos_scores, k=3)
-    ans = []
-    for idx in top_results[1][0]:
-        ans.append({"answer": answers[idx]})
-    return ans[0]
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000, log_level="info")

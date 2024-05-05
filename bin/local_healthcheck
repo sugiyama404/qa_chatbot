@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+function local_healthcheck() {
+  local cwd="$1"
+  cd "${cwd}"
+  TARGET_URL="http://localhost:8000"
+  TIMEOUT=300
+  CHECK_INTERVAL=10
+  CHECK_COUNT=$((TIMEOUT / CHECK_INTERVAL))
+  HEALTHY=1
+
+  # ヘルスチェック
+  for ((i = 0; i < "${CHECK_COUNT}"; i++)); do
+    STATUS_CODE=$(curl --write-out '%{http_code}' --silent --output /dev/null $TARGET_URL) || true
+
+    if [ "${STATUS_CODE}" -eq 200 ]; then
+      echo "[$((i + 1))/$CHECK_COUNT] アクセス成功: ステータスコード $STATUS_CODE"
+      HEALTHY=0
+      break
+    elif [ "${STATUS_CODE}" -eq 000 ]; then
+      echo "container is not running......"
+      HEALTHY=2
+      break
+    else
+      echo "[$((i + 1))/$CHECK_COUNT] アクセス失敗: ステータスコード $STATUS_CODE"
+    fi
+    sleep $CHECK_INTERVAL
+  done
+
+  if [ $HEALTHY -eq 0 ]; then
+    echo "ヘルスチェック: 正常"
+  elif [ $HEALTHY -eq 1 ]; then
+    echo "ヘルスチェック: 失敗 (タイムアウト)"
+  fi
+}
+
+function main() {
+  local cwd
+  cwd="$(cd "$(dirname "$0")/.." && pwd)"
+  local_healthcheck "${cwd}"
+}
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+  main "$@"
+fi

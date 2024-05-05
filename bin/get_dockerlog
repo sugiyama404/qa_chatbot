@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+function get_dockerlog() {
+  local cwd="$1"
+  cd "${cwd}"
+  id=$(docker ps --format "{{.ID}}")
+  docker logs -t "${id}"
+}
+
+function main() {
+  local cwd
+  cwd="$(cd "$(dirname "$0")/.." && pwd)"
+  get_dockerlog "${cwd}"
+}
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+  main "$@"
+fi

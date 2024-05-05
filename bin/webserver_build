@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+function webserver_build() {
+  local cwd="$1"
+  cd "${cwd}"
+  docker compose up -d
+  cd webserver
+  docker compose exec web npm run generate
+  cd ..
+  docker compose down
+}
+
+function main() {
+  local cwd
+  cwd="$(cd "$(dirname "$0")/.." && pwd)"
+  webserver_build "${cwd}"
+
+}
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+  main "$@"
+fi
