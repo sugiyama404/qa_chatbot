@@ -32,6 +32,7 @@ module "bash" {
   image_name = var.image_name
 }
 
+
 # network
 module "network" {
   source   = "./modules/network"
@@ -85,9 +86,11 @@ module "apigateway" {
 
 #cloudfront
 module "cloudfront" {
-  source         = "./modules/cloudfront"
-  app_name       = var.app_name
-  region         = var.region
-  s3_domain_name = module.s3.s3_domain_name
-  s3_origin_id   = module.s3.s3_origin_id
+  source                  = "./modules/cloudfront"
+  app_name                = var.app_name
+  region                  = var.region
+  s3_domain_name          = module.s3.s3_domain_name
+  s3_origin_id            = module.s3.s3_origin_id
+  api_gateway_origin_id   = module.apigateway.api_gateway_origin_id
+  api_gateway_domain_name = module.apigateway.api_gateway_domain_name
 }
