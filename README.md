@@ -1,4 +1,4 @@
-# 高信頼性を実現したAIチャットボット
+# 自然言語処理(Sentence-BERT)を使った高信頼性AIチャットボット
 
 <p align="center">
   <img src="sources/qanda.gif" alt="animated" width="400">
